@@ -3,6 +3,7 @@ package resume_x_backend.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -12,13 +13,14 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    private final String secret =
-            "ResumeXSuperSecretKeyForJwtAuthentication2026";
+    @Value("${JWT_SECRET:ResumeXSuperSecretKeyForJwtAuthentication2026}")
+    private String secret;
 
-    private final SecretKey key =
-            Keys.hmacShaKeyFor(
-                    secret.getBytes(StandardCharsets.UTF_8)
-            );
+    private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(
+                secret.getBytes(StandardCharsets.UTF_8)
+        );
+    }
 
     public String generateToken(String email) {
 
@@ -31,14 +33,14 @@ public class JwtService {
                                         + 86400000
                         )
                 )
-                .signWith(key)
+                .signWith(getKey())
                 .compact();
     }
 
     public String extractEmail(String token) {
 
         return Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -63,7 +65,7 @@ public class JwtService {
     private boolean isTokenExpired(String token) {
 
         Date expiration = Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(getKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
