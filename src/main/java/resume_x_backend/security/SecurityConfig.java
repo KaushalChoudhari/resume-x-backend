@@ -38,7 +38,9 @@ public class SecurityConfig {
 
         http
             // Enable CORS
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .cors(cors ->
+                cors.configurationSource(corsConfigurationSource())
+            )
 
             // Disable CSRF because we are using JWT
             .csrf(csrf -> csrf.disable())
@@ -82,10 +84,14 @@ public class SecurityConfig {
         CorsConfiguration configuration =
                 new CorsConfiguration();
 
-        // React frontend
+        // Allowed frontend origins
         configuration.setAllowedOrigins(
-                List.of("http://localhost:5173","http://localhost:5174")
-                
+                List.of(
+                    "http://localhost:5173",
+                    "http://localhost:5174",
+                    "http://localhost:5175",
+                    "https://resume-x-frontend-pi.vercel.app"
+                )
         );
 
         // HTTP methods allowed from frontend
